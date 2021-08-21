@@ -66,4 +66,23 @@ function aFunction(x) {
 
 }
 
-console.log(aFunction(9)(2)(3))
+const operationOnTwoNumbers = f => x => y => f(x,y)
+
+const  multiply = operationOnTwoNumbers((x,y) => x*y)
+
+const double = multiply(2)
+
+console.log([5, 8, 3, 1, 7, 6, 2].map(double))
+
+const myObj = {
+    aProperty: "Duc was here",
+    anotherProperty: 23
+}
+console.log(myObj.aProperty="FIT2102");
+
+function addN(n , array){
+    return array.map(num => n + num)
+}
+let a = [1,2,3,4]
+addN(1, a)
+console.log(a)
