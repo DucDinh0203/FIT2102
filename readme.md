@@ -1,4 +1,3 @@
-FIT2102 Programming paradigms
+# FIT2102 Programming paradigms
 
-JavaScript
-TypeScript
+JavaScript, TypeScript, haskell
