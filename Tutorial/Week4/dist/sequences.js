@@ -36,7 +36,7 @@ function map(func, seq) {
     };
 }
 function filter(func, seq) {
-    // Your code here ...
+    //if existing value, next value will be applied the func; otherwise, to the next value of the seq
     return func(seq.value) ? {
         value: seq.value,
         next: () => filter(func, seq.next())
@@ -44,49 +44,56 @@ function filter(func, seq) {
 }
 function take(amount, seq) {
     // gets the first n numbers of a sequence
-    return amount ? undefined
-        : {
+    return amount ?
+        {
             value: seq.value,
             next: () => take(amount - 1, seq.next())
-        };
+        }
+        : undefined;
 }
 function reduce(func, seq, start) {
     // Your code here ...
     return seq ? reduce(func, seq.next(), func(start, seq.value)) : start;
-    // return seq ? reduce(func, func(start, seq), seq.next) :start
+}
+function reduceRight(func, seq, start) {
+    // works from the end of lazysequence to the start T in lazy sequence
+    return seq ? func(reduceRight(func, seq.next(), start), seq.value) : start;
 }
 /*
     Exercise 3
  */
-function maxNumber(lazyList) {
+function maxNumber(seq) {
     // ******** YOUR CODE HERE ********
-    // Use __only__ reduce on the
-    // lazyList passed in. The lazyList
-    // will terminate so don't use `take`
-    // inside this function body.
-    return reduce(function (x, y) {
-        return x > y ? x : y;
-    }, lazyList);
+    // should return the largest number in a lazy sequence
+    // 
+    return reduce((max, val) => max > val ? max : val, seq, seq.value);
 }
-function lengthOfSequence(lazyList) {
+function lengthOfSequence(seq) {
     // ******** YOUR CODE HERE ********
     // Again only use reduce and don't
     // use `take` inside this function.
     //    return reduce(function(a,b){
-    return reduce((x, y) => x + 1, lazyList, 0);
+    return reduce((x, _) => x + 1, seq, 0);
 }
-// function maxNumber(seq : LazySequence<number>) : number {
-//     // should return the largest number in a lazy sequence.
-//     // acc is the current largest value
-//     // Rachel I think it is "/g" that u must add to the end of the sed script cant really rmb
-//     // But ye u gotta add something like that
-//     return reduce((max, val) => max > val ? max : val, seq, seq.value) 
-// }
-// function lengthOfSequence(seq : LazySequence<T>):number{
-//     return reduce((acc,_) =>acc+1 ,seq,0) 
-// }
-//    },lazyList)
+function toArray(seq) {
+    return reduce((acc, val) => acc.concat(val), seq, []);
+}
 /*
     Exercise 4
  */
+const series = initSequence((val) => val + 1)(1);
+const newSeries = map((val) => val % 2 === 0 ? -2 * val + 1 : 2 * val - 1, series);
+console.log(toArray(take(10, newSeries)));
+const a = map((x) => 1 / x, take(10, newSeries));
+console.log(toArray(take(2, a)));
+function exercise4Solution(seriesLength) {
+    const series = initSequence((val) => val + 1)(1);
+    const newSeries = map((val) => val % 2 === 0 ? -2 * val + 1 : 2 * val - 1, series);
+    return reduce((acc, val) => (acc + val), take(seriesLength, (map((x) => 1 / x, newSeries))), 0);
+}
+const s1 = initSequence((x) => -(x + Math.sign(x)))(1), seq = map((x) => -x, s1);
+console.log(s1);
+const t1 = take(10, initSequence((x) => (x + Math.sign(x)))(1));
+console.log(t1);
+console.log("hello");
 //# sourceMappingURL=sequences.js.map

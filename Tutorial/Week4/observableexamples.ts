@@ -12,7 +12,7 @@ complete Worksheet 4/5 by entering code in the places marked below...
 */
 
 import { interval, fromEvent } from 'rxjs'
-import { map, filter} from 'rxjs/operators'
+import { map, filter, take, merge} from 'rxjs/operators'
 
 // Simple demonstration 
 // ===========================================================================================
@@ -117,24 +117,29 @@ function piApproximation() {
 
   // Your code starts here!
   // =========================================================================================
-  function createDot(/* what parameters do we need to plot dots at different locations and in red or green? Use the types above! */) {
+  function createDot(point: Dot) {
     if (!canvas) throw "Couldn't get canvas element!";
     const dot = document.createElementNS(canvas.namespaceURI, "circle");
-    const x = 50, y = 50; // all points are at 50,50!
+    //const x = 50, y = 50; // all points are at 50,50!
     // Set circle properties
+    const x = ((point.x +1)*circleRadius), y = ((point.y+1)*circleRadius); 
+    const colour = point.colour
     dot.setAttribute("cx", String(x));
     dot.setAttribute("cy", String(y));
     dot.setAttribute("r", "5");
-    dot.setAttribute("fill", "red");// All points red
+    dot.setAttribute("fill", point.colour);// All points red
 
     // Add the dot to the canvas
     canvas.appendChild(dot);
   }
 
   // A stream of random numbers
-  const randomNumberStream = interval(50).pipe(map(nextRandom))
-
-}
+const randomNumberStream = interval(50).pipe(
+  map(_ => <Dot>{x: nextRandom(), y: nextRandom()}),
+  map(point => <Dot>{x: point.x, y:point.y, color:inCircle(point)?"green" : "red"})
+)
+randomNumberStream.subscribe(createDot)
+randomNumberStream.subscribe(console.log)
 
 // Exercise 6
 // ===========================================================================================
@@ -171,7 +176,26 @@ function animatedRect() {
   // Your code starts here!
   // =========================================================================================
   // ...
-
+   // get the svg canvas element
+   const svg = document.getElementById("animatedRect")!;
+   // create the rect
+   const rect = document.createElementNS(svg.namespaceURI,'rect')
+   Object.entries({
+     x: 100, y: 70,
+     width: 120, height: 80,
+     fill: '#95B3D7',
+   }).forEach(([key,val])=>rect.setAttribute(key,String(val)))
+   svg.appendChild(rect);
+ 
+   function updateRect() {
+     (rect.setAttribute('x', String(1+ Number(rect.getAttribute('x')))));
+     console.log(rect.getAttribute('x'));
+   }
+ 
+   // below is the observable
+   const obs = interval(10).pipe(take(200))
+   obs.subscribe(updateRect)
+ 
 }
 
 // Exercise 7
@@ -188,6 +212,22 @@ function keyboardControl() {
   // Your code starts here!
   // =========================================================================================
   // ...
+  const rect = document.createElementNS(svg.namespaceURI,'rect')
+  Object.entries({
+    x: 100, y: 70,
+    width: 120, height: 80,
+    fill: '#95B3D7',
+  }).forEach(([key,val])=>rect.setAttribute(key,String(val)))
+  svg.appendChild(rect);
+  const key$ = fromEvent<KeyboardEvent>(document,"keydown")
+
+  const keyW = key$.pipe(filter(x => x.key === "w"),map((_) => rect.setAttribute('y', String(-10 + Number(rect.getAttribute('y'))))))
+  const keyA = key$.pipe(filter(x => x.key === "a"), map((_) => rect.setAttribute('x', String(-10 + Number(rect.getAttribute('x'))))))
+  const keyS = key$.pipe(filter(x => x.key === "s") , map((_)=> rect.setAttribute('y', String(10 + Number(rect.getAttribute('y'))))))
+  const keyD = key$.pipe(filter(x=> x.key==="d"),map((_)=>rect.setAttribute('x', String(10 + Number(rect.getAttribute('x'))))))
+
+  const allkeys = keyW.pipe(merge(keyA,keyS,keyD)).subscribe()
+
 }
 
 // Running the code
@@ -206,4 +246,4 @@ document.addEventListener("DOMContentLoaded", function(event) {
   //animatedRect()
   keyboardControl();
 
-});
+});}

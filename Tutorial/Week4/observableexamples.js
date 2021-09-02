@@ -94,82 +94,86 @@ function piApproximation() {
     resultInPage.innerText = "...Update this text to show the Pi approximation...";
     // Your code starts here!
     // =========================================================================================
-    function createDot( /* what parameters do we need to plot dots at different locations and in red or green? Use the types above! */) {
+    function createDot(point) {
         if (!canvas)
             throw "Couldn't get canvas element!";
         const dot = document.createElementNS(canvas.namespaceURI, "circle");
-        const x = 50, y = 50; // all points are at 50,50!
+        //const x = 50, y = 50; // all points are at 50,50!
         // Set circle properties
+        const x = ((point.x + 1) * circleRadius), y = ((point.y + 1) * circleRadius);
+        const colour = point.colour;
         dot.setAttribute("cx", String(x));
         dot.setAttribute("cy", String(y));
         dot.setAttribute("r", "5");
-        dot.setAttribute("fill", "red"); // All points red
+        dot.setAttribute("fill", point.colour); // All points red
         // Add the dot to the canvas
         canvas.appendChild(dot);
     }
     // A stream of random numbers
-    const randomNumberStream = rxjs_1.interval(50).pipe(operators_1.map(nextRandom));
+    const randomNumberStream = rxjs_1.interval(50).pipe(operators_1.map(_ => ({ x: nextRandom(), y: nextRandom() })), operators_1.map(point => ({ x: point.x, y: point.y, color: inCircle(point) ? "green" : "red" })));
+    randomNumberStream.subscribe(createDot);
+    randomNumberStream.subscribe(console.log);
+    // Exercise 6
+    // ===========================================================================================
+    // ===========================================================================================
+    /**
+     * animates an SVG rectangle, passing a continuation to the built-in HTML5 setInterval function.
+     * a rectangle smoothly moves to the right for 1 second.
+     */
+    function animatedRectTimer() {
+        // get the svg canvas element
+        const svg = document.getElementById("animatedRect");
+        // create the rect
+        const rect = document.createElementNS(svg.namespaceURI, 'rect');
+        Object.entries({
+            x: 100, y: 70,
+            width: 120, height: 80,
+            fill: '#95B3D7',
+        }).forEach(([key, val]) => rect.setAttribute(key, String(val)));
+        svg.appendChild(rect);
+        const animate = setInterval(() => rect.setAttribute('x', String(1 + Number(rect.getAttribute('x')))), 10);
+        const timer = setInterval(() => {
+            clearInterval(animate);
+            clearInterval(timer);
+        }, 1000);
+    }
+    /**
+     * Demonstrates the interval method
+     * You want to choose an interval so the rectangle animates smoothly
+     * It terminates after 1 second (1000 milliseconds)
+     */
+    function animatedRect() {
+        // Your code starts here!
+        // =========================================================================================
+        // ...
+    }
+    // Exercise 7
+    // ===========================================================================================
+    // ===========================================================================================
+    /**
+     * Create and control a rectangle using the keyboard! Use only one subscribe call and not the interval method
+     * If statements
+     */
+    function keyboardControl() {
+        // get the svg canvas element
+        const svg = document.getElementById("moveableRect");
+        // Your code starts here!
+        // =========================================================================================
+        // ...
+    }
+    // Running the code
+    // ===========================================================================================
+    // ===========================================================================================
+    document.addEventListener("DOMContentLoaded", function (event) {
+        piApproximation();
+        // compare mousePosEvents and mousePosObservable for equivalent implementations
+        // of mouse handling with events and then with Observable, respectively.
+        //mousePosEvents();
+        mousePosObservable();
+        animatedRectTimer();
+        // replace the above call with the following once you have implemented it:
+        //animatedRect()
+        keyboardControl();
+    });
 }
-// Exercise 6
-// ===========================================================================================
-// ===========================================================================================
-/**
- * animates an SVG rectangle, passing a continuation to the built-in HTML5 setInterval function.
- * a rectangle smoothly moves to the right for 1 second.
- */
-function animatedRectTimer() {
-    // get the svg canvas element
-    const svg = document.getElementById("animatedRect");
-    // create the rect
-    const rect = document.createElementNS(svg.namespaceURI, 'rect');
-    Object.entries({
-        x: 100, y: 70,
-        width: 120, height: 80,
-        fill: '#95B3D7',
-    }).forEach(([key, val]) => rect.setAttribute(key, String(val)));
-    svg.appendChild(rect);
-    const animate = setInterval(() => rect.setAttribute('x', String(1 + Number(rect.getAttribute('x')))), 10);
-    const timer = setInterval(() => {
-        clearInterval(animate);
-        clearInterval(timer);
-    }, 1000);
-}
-/**
- * Demonstrates the interval method
- * You want to choose an interval so the rectangle animates smoothly
- * It terminates after 1 second (1000 milliseconds)
- */
-function animatedRect() {
-    // Your code starts here!
-    // =========================================================================================
-    // ...
-}
-// Exercise 7
-// ===========================================================================================
-// ===========================================================================================
-/**
- * Create and control a rectangle using the keyboard! Use only one subscribe call and not the interval method
- * If statements
- */
-function keyboardControl() {
-    // get the svg canvas element
-    const svg = document.getElementById("moveableRect");
-    // Your code starts here!
-    // =========================================================================================
-    // ...
-}
-// Running the code
-// ===========================================================================================
-// ===========================================================================================
-document.addEventListener("DOMContentLoaded", function (event) {
-    piApproximation();
-    // compare mousePosEvents and mousePosObservable for equivalent implementations
-    // of mouse handling with events and then with Observable, respectively.
-    //mousePosEvents();
-    mousePosObservable();
-    animatedRectTimer();
-    // replace the above call with the following once you have implemented it:
-    //animatedRect()
-    keyboardControl();
-});
 //# sourceMappingURL=observableexamples.js.map

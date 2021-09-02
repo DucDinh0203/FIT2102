@@ -20,7 +20,7 @@ browser window to run the test.
     Exercise 1 - General Purpose infinite sequence function
  */
 
-interface LazySequence<T> {
+interface LazySequence<T>{
     value: T;
     next(): LazySequence<T>;
 }
@@ -48,7 +48,7 @@ function map<T,V>(func: (v: T)=>V, seq: LazySequence<T>): LazySequence<V> {
     }
 
 function filter<T>(func: (v: T) => boolean, seq: LazySequence<T>): LazySequence<T> {
-    // Your code here ...
+    //if existing value, next value will be applied the func; otherwise, to the next value of the seq
     return func(seq.value) ? {
         value:seq.value,
         next:() => filter(func,seq.next())
@@ -108,3 +108,12 @@ function exercise4Solution(seriesLength: number): number {
     const newSeries = map( (val) => val%2===0 ? -2*val+1: 2*val-1,series)
     return reduce((acc:number,val:number) => (acc+val), take(seriesLength, (map((x)=>1/x, newSeries))), 0)
 }
+
+const s1 = initSequence((x: number) => -(x + Math.sign(x)))(1),
+    seq = map((x) => -x, s1);
+
+console.log(s1);
+
+const t1 = take(10, initSequence((x: number) => (x + Math.sign(x)))(1));
+console.log(t1);
+console.log("hello")
