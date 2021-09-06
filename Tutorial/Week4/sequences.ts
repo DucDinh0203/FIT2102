@@ -117,3 +117,4 @@ console.log(s1);
 const t1 = take(10, initSequence((x: number) => (x + Math.sign(x)))(1));
 console.log(t1);
 console.log("hello")
+console.log("duc");
