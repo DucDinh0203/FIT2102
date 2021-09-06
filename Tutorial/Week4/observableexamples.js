@@ -146,6 +146,23 @@ function piApproximation() {
         // Your code starts here!
         // =========================================================================================
         // ...
+        // get the svg canvas element
+        const svg = document.getElementById("animatedRect");
+        // create the rect
+        const rect = document.createElementNS(svg.namespaceURI, 'rect');
+        Object.entries({
+            x: 100, y: 70,
+            width: 120, height: 80,
+            fill: '#95B3D7',
+        }).forEach(([key, val]) => rect.setAttribute(key, String(val)));
+        svg.appendChild(rect);
+        function updateRect() {
+            (rect.setAttribute('x', String(1 + Number(rect.getAttribute('x')))));
+            console.log(rect.getAttribute('x'));
+        }
+        // below is the observable
+        const obs = rxjs_1.interval(10).pipe(operators_1.take(200));
+        obs.subscribe(updateRect);
     }
     // Exercise 7
     // ===========================================================================================
@@ -160,6 +177,19 @@ function piApproximation() {
         // Your code starts here!
         // =========================================================================================
         // ...
+        const rect = document.createElementNS(svg.namespaceURI, 'rect');
+        Object.entries({
+            x: 100, y: 70,
+            width: 120, height: 80,
+            fill: '#95B3D7',
+        }).forEach(([key, val]) => rect.setAttribute(key, String(val)));
+        svg.appendChild(rect);
+        const key$ = rxjs_1.fromEvent(document, "keydown");
+        const keyW = key$.pipe(operators_1.filter(x => x.key === "w"), operators_1.map((_) => rect.setAttribute('y', String(-10 + Number(rect.getAttribute('y'))))));
+        const keyA = key$.pipe(operators_1.filter(x => x.key === "a"), operators_1.map((_) => rect.setAttribute('x', String(-10 + Number(rect.getAttribute('x'))))));
+        const keyS = key$.pipe(operators_1.filter(x => x.key === "s"), operators_1.map((_) => rect.setAttribute('y', String(10 + Number(rect.getAttribute('y'))))));
+        const keyD = key$.pipe(operators_1.filter(x => x.key === "d"), operators_1.map((_) => rect.setAttribute('x', String(10 + Number(rect.getAttribute('x'))))));
+        const allkeys = keyW.pipe(operators_1.merge(keyA, keyS, keyD)).subscribe();
     }
     // Running the code
     // ===========================================================================================
