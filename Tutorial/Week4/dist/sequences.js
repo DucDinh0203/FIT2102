@@ -94,6 +94,4 @@ function exercise4Solution(seriesLength) {
 const s1 = initSequence((x) => -(x + Math.sign(x)))(1), seq = map((x) => -x, s1);
 console.log(s1);
 const t1 = take(10, initSequence((x) => (x + Math.sign(x)))(1));
-console.log(t1);
-console.log("hello");
 //# sourceMappingURL=sequences.js.map
